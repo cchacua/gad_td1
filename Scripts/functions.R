@@ -9,6 +9,7 @@ open.insee.monthly<-function(file.xls){
   df$'Année'<-as.numeric(as.character(df$'Année'))
   df$'id'<-paste(df$'Année', df$'Mois', sep="")
   df<-sapply(df, as.numcol)
+  df<-as.data.frame(df)
   df
 }
 
