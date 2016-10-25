@@ -1,13 +1,21 @@
+
+  # install.packages("devtools")
+  # install.packages("xlsx")
+  # install.packages("ggthemes")
+  # 
+  # library("devtools")
+  # install_github(c("hadley/ggplot2", "jrnold/ggthemes"))
+  # 
+  # library(reshape)
+  # library(RColorBrewer)
+install.packages("stringr")
 # Évolution de la production en France des marchés clients
-library("devtools")
-install_github(c("hadley/ggplot2", "jrnold/ggthemes"))
+
 
 library(xlsx)
+library(ggthemes)
 library(ggplot2)
-library(reshape)
-library(RColorBrewer)
-library("ggthemes")
-
+library(stringr)
 
 # Analysis of demand
 
@@ -24,27 +32,23 @@ data$yers<-seq(2008, 2016, 1)
 data[,1]<-as.numcol(data[,1])
 data<-na.omit(data)
 colnames(data)<-c("values", "temps")
+filename<-str_replace_all(serie[2,1], "[^[:alnum:]]", " ")
+
+windowsFonts(arial=windowsFont("Arial"))
+
 p<-ggplot(data=data,
           aes(x=temps, y= values)) +
-  geom_line() +
-  geom_point()+
-  scale_fill_brewer(palette="Set2")
-p  
-aes(colour="#00BFC4")
-  
-  geom_bar(position=position_dodge(),stat="identity") + 
-  theme(legend.position="bottom")+ theme(legend.background = element_rect(fill="#EBEBEB", size=.5, linetype="dotted"))
-p<-p+xlab("Production")+ylab("Facturations (en milliers d'euros)")+labs(fill="Année")
-library(scales)
-p<-p+scale_y_continuous(labels=function(x) format(x, big.mark = " ", scientific = FALSE))+
-  ggtitle("Evolution entre 2013 et 2015 des cinq plus importantes \n productions françaises facturées en 2015.")+
-  theme(plot.title = element_text(lineheight=.9, face="bold"))+
-  scale_x_discrete(labels=c("Aéronefs et \n engins spatiaux","Produits du raffinage","Véhicules \n automobiles","Préparations \n pharmaceutiques", "Commerce du gaz \n par réseau")) +
-  theme(text=element_text(family="Times", face="bold", size=12))
+  geom_line(colour = "#0072B2") +
+  #stat_smooth(se=FALSE)+
+  geom_point(colour = "#0072B2")+
+
+  xlab("Année")+
+  ylab(serie[1,1])+
+  # ggtitle(serie[2,1])+
+  # theme(plot.title = element_text(size=11, face="bold", 
+  #                                 margin = margin(0, 0, 5, 0)))+
+  theme(text=element_text(family="arial", size=10))
+ggsave(file=paste0("../output/", filename, ".png", sep=""), width = 10, height = 5, units = "cm", scale=1)
+
 p
-ggsave(file=paste(serie[,2], ".png", sep=""), width = 28, height = 17, units = "cm", scale=0.78)
 
-
-df.rnames<-rownames(df)
-df.rnames[9:17]<-df$x0[9:17]
-rownames(df)<-df.rnames
