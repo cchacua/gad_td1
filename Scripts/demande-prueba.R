@@ -32,4 +32,6 @@ pro.md.fr.all<-na.omit(pro.md.fr.all)
 
 pro.md.fr.all<-aggregate(pro.md.fr.all, list("Année" = pro.md.fr.all$"Année"), mean)
 
+write.xlsx2(pro.md.fr.all, "../output/tables/demandfr.xlsx")
+
 
