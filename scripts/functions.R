@@ -18,7 +18,7 @@ as.numcol<-function(x){
   y
 }
 
-maketsgraph<-function(ts){
+maketsgraphsimple<-function(ts){
   serie<-as.data.frame(ts)
   data<-as.data.frame(serie[9:17,])
   data$yers<-seq(2008, 2016, 1)
@@ -26,9 +26,7 @@ maketsgraph<-function(ts){
   data<-na.omit(data)
   colnames(data)<-c("values", "temps")
   filename<-str_replace_all(serie[2,1], "[^[:alnum:]]", " ")
-  
   windowsFonts(arial=windowsFont("Arial"))
-  
   p<-ggplot(data=data,
             aes(x=temps, y= values)) +
     geom_line(colour = "#0072B2") +
@@ -42,7 +40,70 @@ maketsgraph<-function(ts){
   ggsave(file=paste0("../output/", filename, ".png", sep=""), width = 10, height = 5, units = "cm", scale=1)
 }  
 
+maketsgraph<-function(ts){
+  serie<-as.data.frame(ts)
+  data<-as.data.frame(serie[9:17,])
+  data$yers<-seq(2008, 2016, 1)
+  data[,1]<-as.numcol(data[,1])
+  data<-na.omit(data)
+  colnames(data)<-c("values", "temps")
+  filename<-str_replace_all(serie[2,1], "[^[:alnum:]]", " ")
+  #windowsFonts(arial=windowsFont("Arial"))
+  p<-ggplot(data=data,
+            aes(x=temps, y= values)) +
+    geom_line(colour = "#0072B2") +
+    #stat_smooth(se=FALSE)+
+    geom_point(colour = "#0072B2")+
+    xlab("Année")+
+    ylab(serie[1,1])+
+    # ggtitle(serie[2,1])+
+    # theme(plot.title = element_text(size=11, face="bold", margin = margin(0, 0, 5, 0)))+
+    #theme(text=element_text(family="arial", size=10))
+  ggsave(file=paste0("../output/", filename, ".png", sep=""), width = 10, height = 5, units = "cm", scale=1)
+}  
 
+
+maketsgraphandrates<-function(ts){
+  serie<-as.data.frame(ts)
+  data<-as.data.frame(serie[9:17,])
+  data$yers<-seq(2008, 2016, 1)
+  data[,1]<-as.numcol(data[,1])
+  data$colors<-rep.int("#0072B2",9)
+  data$colors[9]<-"red"
+  data<-na.omit(data)
+  colnames(data)<-c("values", "temps", "colors")
+  print(data)
+  filename<-str_replace_all(serie[2,1], "[^[:alnum:]]", " ")
+  #windowsFonts(arial=windowsFont("Arial"))
+  data
+  p<-ggplot(data=data,
+            aes(x=temps, y= values)) +
+    geom_line(colour = "#0072B2") +
+    #stat_smooth(se=FALSE)+
+    geom_point(colour = "#0072B2")+
+    xlab("Année")+
+    ylab(serie[1,1])
+    # ggtitle(serie[2,1])+
+    # theme(plot.title = element_text(size=11, face="bold", margin = margin(0, 0, 5, 0)))+
+    #theme(text=element_text(family="arial", size=10))
+    ggsave(file=paste0("../output/", filename, ".png", sep=""), width = 10, height = 5, units = "cm", scale=1)
+  
+  croissance<-data[2:nrow(data),1:2]
+  croissance$valuest<-data[1:nrow(data)-1,1]
+  croissance$taux<-((croissance$values/ croissance$valuest)-1)*100
+    q<-ggplot(data=croissance,
+              aes(x=temps, y= taux)) +
+      geom_line(colour = "#0072B2") +
+      #stat_smooth(se=FALSE)+
+      geom_point(colour = "#0072B2")+
+      xlab("Année")+
+      ylab(serie[1,1])
+    # ggtitle(serie[2,1])+
+    # theme(plot.title = element_text(size=11, face="bold", margin = margin(0, 0, 5, 0)))+
+    #theme(text=element_text(family="arial", size=10))
+    ggsave(file=paste0("../output/", filename, "-croissance.png", sep=""), width = 10, height = 5, units = "cm", scale=1)
+    
+  }  
 # library(grid)
 # library(gtable)
 # 
