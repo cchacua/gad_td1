@@ -117,50 +117,65 @@ maketsgraphandrates<-function(ts){
   data  
 }  
 
-maketsgraphandrates.two<-function(ts){
+maketsgraphandrates.two<-function(ts, label1="Europe", label2="France"){
   serie<-as.data.frame(ts)
   data<-as.data.frame(serie[9:17,])
   data$yers<-seq(2008, 2016, 1)
+  data1<-data[,c(1,3)]
+  data1$origin<-label1
+  data1[,1]<-as.numcol(data1[,1])
+  colnames(data1)<-c("values", "temps", "origin")
+  data2<-data[,c(2,3)]
+  data2$origin<-label2
+  data2[,1]<-as.numcol(data2[,1])
+  colnames(data2)<-c("values", "temps", "origin")
+  data<-rbind(data1, data2)
   data[,1]<-as.numcol(data[,1])
-  data$colors<-rep.int("#0072B2",9)
-  data$colors[9]<-"#D55E00"
   data<-na.omit(data)
-  colnames(data)<-c("values", "values2", "temps", "colors")
   print(data)
   filename<-str_replace_all(serie[2,1], "[^[:alnum:]]", " ")
   windowsFonts(arial=windowsFont("Arial"))
   
   p<-ggplot(data=data,
-            aes(x=temps, y= values)) +
-    geom_line(colour = "#0072B2") +
-    geom_point(aes(colour=colors))+
-    xlab("Année")+
+            aes(x=temps, y= values, group=origin, color=origin)) +
+    geom_line() +
+    geom_point()+
+    xlab('Ann\u{E9}e')+
     ylab(serie[1,1])+
     # ggtitle(serie[2,1])+
     #theme(plot.title = element_text(size=11, face="bold", margin = margin(0, 0, 5, 0)))+
     theme(text=element_text(family="arial", size=10))+
-    theme(legend.position="none")
-  
+    scale_color_discrete(name="")
   ggsave(file=paste0("../output/", filename, ".png", sep=""), plot=p, width = 10, height = 5, units = "cm", scale=1)
   
+  croissance1<-data1[2:nrow(data1),1:3]
+  croissance1$valuest<-data1[1:nrow(data1)-1,1]
+  croissance1$taux<-((croissance1$values/ croissance1$valuest)-1)*100
+  croissance1$temps<-paste(substrRight(data1[1:nrow(data1)-1,2],2), substrRight(data1[2:nrow(data1),2],2),sep=" - " )
+  croissance1<-na.omit(croissance1)
+  print(croissance1) 
   
-  croissance<-data[2:nrow(data),1:2]
-  croissance$valuest<-data[1:nrow(data)-1,1]
-  croissance$taux<-((croissance$values/ croissance$valuest)-1)*100
-  croissance$temps<-paste(substrRight(data[1:nrow(data)-1,2],2), substrRight(data[2:nrow(data),2],2),sep=" - " )
-  print(croissance) 
+  croissance2<-data2[2:nrow(data2),1:3]
+  croissance2$valuest<-data2[1:nrow(data2)-1,1]
+  croissance2$taux<-((croissance2$values/ croissance2$valuest)-1)*100
+  croissance2$temps<-paste(substrRight(data2[1:nrow(data2)-1,2],2), substrRight(data2[2:nrow(data2),2],2),sep=" - " )
+  croissance2<-na.omit(croissance2)
+  print(croissance2) 
+  
+  croissance<-rbind(croissance1[,c("temps", "taux","origin")], croissance2[,c("temps", "taux","origin")])
   q<-ggplot(data=croissance,
-            aes(x=temps, y= taux)) +
-    geom_bar(stat="identity", color="#009E73", fill="#009E73")+
+            aes(x=temps, y= taux, fill=origin)) +
+    geom_bar(stat="identity",position=position_dodge())+
     #geom_line(colour = "#009E73") +
     #stat_smooth(se=FALSE)+
     #geom_point(colour = "#009E73")+
-    xlab("Période")+
+    xlab('P\u{E9}riode')+
     ylab("% de variation")+
     geom_hline(aes(yintercept=0))+
     # ggtitle(serie[2,1])+
     theme(plot.title = element_text(size=11, face="bold", margin = margin(0, 0, 5, 0)))+
-    theme(text=element_text(family="arial", size=8))
+    theme(text=element_text(family="arial", size=8))+
+    theme(legend.title=element_blank())
   #theme(axis.text.x = element_text(angle=15, vjust=1, size=7, hjust=1))
   ggsave(file=paste0("../output/", filename, "-croissance.png", sep=""), plot=q, width = 10, height = 4, units = "cm", scale=1)
   data  

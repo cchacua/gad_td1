@@ -31,27 +31,25 @@ demande.df<-read.xlsx2(files[1], 1)
 sapply(demande.df[,2:5], maketsgraphandrates)
 maketsgraphandrates(demande.df$a1)
 
+#Marchés clients EU-FR - Eurostat
+maketsgraphandrates.two(demande.df[,6:7])
+maketsgraphandrates.two(demande.df[,8:9])
+maketsgraphandrates.two(demande.df[,10:11])
+maketsgraphandrates.two(demande.df[,12:13])
+
 # Consommation des menages
 demande2.df<-read.xlsx2(files[2], 1)
 sapply(demande2.df[,14:15], maketsgraphandrates)
 
 
-for(col in names(demande.df)){
-  demande.df[[col]] <- maketsgraphandrates(demande.df[[col]])
-}
+# Offre
+offre.df<-read.xlsx2(files[3], 2)
+sapply(offre.df[,5:8], maketsgraphandrates)
+maketsgraphandrates(offre.df[,9])
 
-apply(demande.df,2, maketsgraphandrates)
+#Configuration productive
+conf.df<-read.xlsx2(files[3], 3)
+sapply(conf.df[,2:3], maketsgraphandrates)
 
+  
 
-sapply(demande.df[,2:ncol(demande.df)], maketsgraphn)
-
-
-offre.df<-read.xlsx2(files[3], "Offre")
-lapply(offre.df, maketsgraphandrates)
-
-
-maketsgraph(demande.df$a1)
-das<-
-  maketsgraphn(demande.df$a2)
-
-#Change colors in points and line for 2016
